@@ -1,0 +1,91 @@
+﻿<UserControl x:Class="YoutubeDemo.Components.Comment.Comments"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:comp="clr-namespace:YoutubeDemo.Components" 
+             xmlns:comment="clr-namespace:YoutubeDemo.Components.Comment"  
+             mc:Ignorable="d" 
+             d:DesignHeight="100" d:DesignWidth="400"
+             Background="Transparent">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <StackPanel Margin="0,0,0,10">
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Ellipse Grid.Column="0" Width="32" Height="32" Margin="0,0,10,0" VerticalAlignment="Top">
+                <Ellipse.Fill>
+                    <ImageBrush ImageSource="{Binding AuthorProfileImageUrl}" />
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <StackPanel Grid.Column="1">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding AuthorDisplayName}" Foreground="#FFFFFF" FontWeight="SemiBold" FontSize="12"/>
+                    <TextBlock Text="{Binding PublishedAt, StringFormat='{}{0:yyyy-MM-dd}'}" Foreground="#AAAAAA" FontSize="11" Margin="8,0,0,0"/>
+                </StackPanel>
+
+                <TextBlock Text="{Binding TextDisplay}" Foreground="White" TextWrapping="Wrap" FontSize="13" LineHeight="18" Margin="0,2,0,0"/>
+
+                <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center" Visibility="{Binding CanRate, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Border CornerRadius="12" Padding="8,4" Margin="0,0,4,0" Cursor="Hand">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ViewerRating}" Value="like">
+                                        <Setter Property="Background" Value="#3F4A9EFF"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="👍" FontSize="12" Margin="0,0,4,0"/>
+                            <TextBlock Text="{Binding LikeCount}" Foreground="#AAAAAA" FontSize="11"/>
+                        </StackPanel>
+                    </Border>
+                    <Button Content="回覆" Foreground="#AAAAAA" Background="Transparent" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="8,0,0,0"/>
+                </StackPanel>
+
+                <TextBlock Foreground="#4A9EFF" FontSize="12" FontWeight="SemiBold" Margin="0,8,0,0" Cursor="Hand">
+                    <TextBlock.Text>
+                        <Binding Path="TotalReplyCount" StringFormat=" ⮥ 查看 {0} 則回覆"/>
+                    </TextBlock.Text>
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding TotalReplyCount}" Value="1">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+            </StackPanel>
+        </Grid>
+
+        <ItemsControl ItemsSource="{Binding replies}" Margin="20,0,0,0">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <comment:Comments DataContext="{Binding}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+
+    </StackPanel>
+</UserControl>
