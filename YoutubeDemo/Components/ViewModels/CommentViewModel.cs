@@ -3,21 +3,26 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace YoutubeDemo.Components.ViewModels
 {
+
     public class CommentViewModel
     {
-        public ObservableCollection<CommentModel> commentModels { get; set; } = new ObservableCollection<CommentModel>();
+        List<CommentModel> models;
+        public CommentViewModel(List<CommentModel> models)
+        {
 
+           
+            RenderComments(this.models);
+        }
+        
         public void RenderComments(List<CommentModel> models)
         {
-            commentModels.Clear();
-            foreach (var model in models)
-            {
-               commentModels.Add(model);
-            }
+
         }
     }
 }

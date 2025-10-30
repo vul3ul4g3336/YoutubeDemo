@@ -33,7 +33,46 @@
                     <TextBlock Text="{Binding PublishedAt, StringFormat='{}{0:yyyy-MM-dd}'}" Foreground="#AAAAAA" FontSize="11" Margin="8,0,0,0"/>
                 </StackPanel>
 
-                <TextBlock Text="{Binding TextDisplay}" Foreground="White" TextWrapping="Wrap" FontSize="13" LineHeight="18" Margin="0,2,0,0"/>
+                <TextBlock TextWrapping="Wrap" FontSize="13" LineHeight="18" Margin="0,2,0,0">
+                    <ItemsControl ItemsSource="{Binding commentSegment}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Text}" Foreground="White">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsHyperLink}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsHyperLink}" Value="False">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                        <Hyperlink NavigateUri="{Binding Url}" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#4A9EFF" TextDecorations="None">
+                                            <Run Text="{Binding Text, Mode=OneWay}"/>
+                                        </Hyperlink>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </TextBlock>
 
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center" Visibility="{Binding CanRate, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <Border CornerRadius="12" Padding="8,4" Margin="0,0,4,0" Cursor="Hand">
@@ -55,26 +94,60 @@
                     <Button Content="回覆" Foreground="#AAAAAA" Background="Transparent" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="8,0,0,0"/>
                 </StackPanel>
 
-                <TextBlock Foreground="#4A9EFF" FontSize="12" FontWeight="SemiBold" Margin="0,8,0,0" Cursor="Hand">
-                    <TextBlock.Text>
-                        <Binding Path="TotalReplyCount" StringFormat=" ⮥ 查看 {0} 則回覆"/>
-                    </TextBlock.Text>
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock">
+                <ToggleButton x:Name="ReplyToggle" Foreground="#4A9EFF" Background="Transparent" BorderThickness="0" FontSize="12" FontWeight="SemiBold" Margin="0,8,0,0" Cursor="Hand" HorizontalAlignment="Left" Padding="0">
+                    <ToggleButton.Style>
+                        <Style TargetType="ToggleButton">
                             <Setter Property="Visibility" Value="Collapsed"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <TextBlock Foreground="#4A9EFF" FontSize="12" FontWeight="SemiBold">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Text" Value="{Binding TotalReplyCount, StringFormat=' ⮥ 查看 {0} 則回覆'}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}}" Value="True">
+                                                            <Setter Property="Text" Value=" ⮝ 隱藏回覆"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding TotalReplyCount}" Value="1">
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding TotalReplyCount, FallbackValue=0, TargetNullValue=0}" Value="0"/>
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </MultiDataTrigger>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding TotalReplyCount, FallbackValue=0, TargetNullValue=0}" Value="1"/>
+                                    </MultiDataTrigger.Conditions>
                                     <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
+                                </MultiDataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </TextBlock.Style>
-                </TextBlock>
+                    </ToggleButton.Style>
+                </ToggleButton>
 
             </StackPanel>
         </Grid>
 
         <ItemsControl ItemsSource="{Binding replies}" Margin="20,0,0,0">
+            <ItemsControl.Style>
+                <Style TargetType="ItemsControl">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsChecked, ElementName=ReplyToggle}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ItemsControl.Style>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <comment:Comments DataContext="{Binding}" />

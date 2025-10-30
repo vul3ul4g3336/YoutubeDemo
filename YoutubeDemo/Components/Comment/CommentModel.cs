@@ -25,9 +25,17 @@ namespace YoutubeDemo.Components
         }
         public LikeStatusEnum ViewerRating { get; set; }
         public int LikeCount { get; set; }
+        public string TextOriginal { get; set; }
         public string TextDisplay { get; set; }
         public DateTime PublishedAt { get; set; }
         public int TotalReplyCount { get; set; }
         public CommentModel[] replies { get; set; }
+        public List<CommentSegment> commentSegment { get; set; }
+    }
+    public class CommentSegment
+    {
+        public string Text { get; set; }
+        public string Url { get; set; }
+        public bool IsHyperLink { get; set; }   
     }
 }

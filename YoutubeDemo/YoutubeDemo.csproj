@@ -83,6 +83,7 @@
     <Compile Include="Components\Comment\Comments.xaml.cs">
       <DependentUpon>Comments.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Components\Comment\CommentSegment.cs" />
     <Compile Include="Components\PaginationComponent\PageInfo.cs" />
     <Compile Include="Components\Paginations.xaml.cs">
       <DependentUpon>Paginations.xaml</DependentUpon>

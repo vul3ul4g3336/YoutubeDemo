@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using YoutubeAPI.Videos.Model;
 using YoutubeDemo.Components;
@@ -36,7 +37,8 @@ namespace YoutubeDemo.Presenter
         .ForMember(x => x.TextDisplay, y => y.MapFrom(z => z.snippet.topLevelComment.snippet.textDisplay))
         .ForMember(x => x.PublishedAt, y => y.MapFrom(z => z.snippet.topLevelComment.snippet.publishedAt))
         .ForMember(x => x.TotalReplyCount, y => y.MapFrom(z => z.snippet.totalReplyCount))
-        .ForMember(x => x.replies, y => y.MapFrom(z => z.snippet.totalReplyCount > 0 ? DataTransform(z.replies) : null));
+        .ForMember(x => x.replies, y => y.MapFrom(z => z.snippet.totalReplyCount > 0 ? DataTransform(z.replies) : null))
+        .ForMember(x => x.commentSegment , y=> y.MapFrom(z => SegmentTextByUrls(z.snippet.topLevelComment.snippet.textDisplay)));
             }).ToList();
             commentView.Comment_Response(models);
         }
@@ -52,9 +54,54 @@ namespace YoutubeDemo.Presenter
         .ForMember(x => x.ViewerRatingString, y => y.MapFrom(z => z.snippet.viewerRating))
         .ForMember(x => x.LikeCount, y => y.MapFrom(z => z.snippet.likeCount))
         .ForMember(x => x.TextDisplay, y => y.MapFrom(z => z.snippet.textDisplay))
-        .ForMember(x => x.PublishedAt, y => y.MapFrom(z => z.snippet.publishedAt));
+        .ForMember(x => x.PublishedAt, y => y.MapFrom(z => z.snippet.publishedAt))
+         .ForMember(x => x.commentSegment, y => y.MapFrom(z => SegmentTextByUrls(z.snippet.textDisplay)));
             }).ToArray();
+            
             return models;
+        }
+
+        private List<CommentSegment> SegmentTextByUrls(string Text)
+        {
+            string pattern = @"<a\s+href\s*=\s*""([^""]+)""\s*>(.*?)<\/a>";
+            var regex = new Regex(pattern, RegexOptions.IgnoreCase);
+            List<CommentSegment> segments = new List<CommentSegment>();
+            int lastIndex = 0;
+           
+
+                var matches = regex.Matches(Text);
+                if (matches.Count == 0)
+                {
+                    segments.Add(new CommentSegment { Text =Text, IsHyperLink = false });
+                return segments;
+                }
+
+                foreach (Match match in matches)
+                {
+                    if (match.Index > lastIndex)
+                    {
+                        string textBefore = Text.Substring(lastIndex, match.Index - lastIndex);
+                        segments.Add(new CommentSegment() { Text = textBefore.Replace("<br>", "\n"), IsHyperLink = false });
+
+                    }
+
+                    segments.Add(new CommentSegment
+                    {
+                        Text = match.Groups[2].Value.Replace("<br>", "\n"), // 顯示的文字 (Group 2)
+                        IsHyperLink = true,
+                        Url = match.Groups[1].Value // 實際的 URL (Group 1)
+                    });
+                    lastIndex = match.Index + match.Length;
+                }
+                if(lastIndex < Text.Length)
+                {
+                    string textAfter = Text.Substring(lastIndex);
+                    segments.Add(new CommentSegment() { Text = textAfter, IsHyperLink = false });
+                }
+               
+                return segments;
+            
+
         }
     }
 }

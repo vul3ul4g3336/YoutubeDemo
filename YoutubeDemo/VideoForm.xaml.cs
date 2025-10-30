@@ -34,7 +34,7 @@ namespace YoutubeDemo
         public VideoForm(CardViewModel model)
         {
             InitializeComponent();
-            commentViewModel = new CommentViewModel();
+            ////commentViewModel = new CommentViewModel();
             this.model = model;
             this.DataContext = model;
             commentPresenter = new CommentPresenter(this);
