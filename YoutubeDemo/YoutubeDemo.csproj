@@ -39,6 +39,12 @@
     <Reference Include="AutoMapper, Version=10.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.10.0.0\lib\net461\AutoMapper.dll</HintPath>
     </Reference>
+    <Reference Include="CredentialManagement, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CredentialManagement.1.0.2\lib\net35\CredentialManagement.dll</HintPath>
+    </Reference>
+    <Reference Include="GoogleOauthConsole">
+      <HintPath>..\..\GoogleOauthConsole\GoogleOauthConsole\bin\Debug\GoogleOauthConsole.dll</HintPath>
+    </Reference>
     <Reference Include="HttpUtility">
       <HintPath>..\..\YoutubeAPI\YoutubeAPI\bin\Debug\HttpUtility.dll</HintPath>
     </Reference>
@@ -72,11 +78,13 @@
     <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
-    <Reference Include="YoutubeAPI">
+    <Reference Include="YoutubeAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\YoutubeAPI\YoutubeAPI\bin\Debug\YoutubeAPI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Command\RelayCommand.cs" />
     <Compile Include="Components\Card.xaml.cs">
       <DependentUpon>Card.xaml</DependentUpon>
     </Compile>
@@ -121,6 +129,12 @@
     <Compile Include="Forms\VideosForm.Designer.cs">
       <DependentUpon>VideosForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Login\LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Login\LoginForm.Designer.cs">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Enum\CategoryType.cs" />
     <Compile Include="Models\Enum\CategoryTypeEnum.cs" />
     <Compile Include="Models\Enum\SearchType.cs" />
@@ -138,9 +152,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\VideoCardModel.cs" />
     <Compile Include="LikeStatusEnum.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Utility\Mapper.cs" />
     <Compile Include="SearchViewModel.cs" />
-    <Compile Include="VideoForm.xaml.cs">
+    <Compile Include="Components\VideoForm.xaml.cs">
       <DependentUpon>VideoForm.xaml</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Components\PaginationComponent\Pagination.resx">
@@ -158,15 +177,14 @@
     <EmbeddedResource Include="Forms\VideosForm.resx">
       <DependentUpon>VideosForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Login\LoginForm.resx">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -197,7 +215,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="VideoForm.xaml">
+    <Page Include="Components\VideoForm.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

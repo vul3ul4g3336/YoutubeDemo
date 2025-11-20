@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CredentialManagement;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,12 +7,14 @@ using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
+using YoutubeAPI;
 using YoutubeAPI.Channel;
 using YoutubeAPI.Videos;
 using YoutubeAPI.Videos.Model;
@@ -20,7 +23,7 @@ using YoutubeDemo.Components.ViewModels;
 using YoutubeDemo.Models;
 using YoutubeDemo.Models.Enum;
 using YoutubeDemo.Presenter;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
 using static YoutubeDemo.Contract.SearchVideoContract;
 
 namespace YoutubeDemo
@@ -135,6 +138,16 @@ namespace YoutubeDemo
 
         private void SearchForm_Load(object sender, EventArgs e)
         {
+            var cred = CredentialManager.Load<GoogleCredentialModel>("MyYoutubeApp_Token");
+            if (cred != null) button2.Text = "登出";
+            else button2.Text = "登入";
+
+
+
+
+
+
+
             // ==========================================================
             // 步驟 1: 定義統一的顏色主題 (已更新背景色)
             // ==========================================================
@@ -191,6 +204,29 @@ namespace YoutubeDemo
 
             // --- 卡片容器 (videoCardContainer) ---
             this.videoCardContainer.BackColor = themeBackColor;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var cred = new  Credential { Target = "MyYoutubeApp_Token" };
+            if (cred.Load())
+            {
+                
+                cred.Delete();
+                Console.WriteLine("成功");
+            }
+            this.Close();
+            //switch (button.Text)
+            //{
+            //    case "登入":
+            //        var cred = new Credential { Target = "MyYoutubeApp_Token" };
+            //        cred.AccessToken = dto.access_token;
+            //        cred.ExpireTime = DateTime.Now.AddSeconds(dto.expires_in)
+            //                                .ToString("yyyy-MM-dd HH:mm:ss");
+            //        break;
+            //    case "登出":
+            //        break;
+            //}
         }
     }
 }

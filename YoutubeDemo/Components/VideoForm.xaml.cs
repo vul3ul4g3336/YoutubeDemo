@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
 using YoutubeAPI.Comments;
@@ -24,24 +25,30 @@ namespace YoutubeDemo
     /// </summary>
     public partial class VideoForm : UserControl, ICommentView
     {
-        CardViewModel model;
+        public CardViewModel model { get; set; }
+        public CommentViewModel commentViewModel { get; set; }
+        
         IRatingPresenter ratingPresenter = new RatingPresenter();
         ICommentPresenter commentPresenter;
-        Comments comments;
 
-        public CommentViewModel commentViewModel { get; set; }
+        public static VideoForm CurrentInstance { get; private set; }
 
         public VideoForm(CardViewModel model)
         {
             InitializeComponent();
-            ////commentViewModel = new CommentViewModel();
+            
             this.model = model;
-            this.DataContext = model;
+            this.DataContext = this;
             commentPresenter = new CommentPresenter(this);
+            commentViewModel = new CommentViewModel();
             commentPresenter.Comment_Request(model.VideoID);
+            CurrentInstance = this;
         }
 
-
+       public void DeleteComment(string commentID)
+        {
+            commentPresenter.Comment_Delete(commentID);
+        }
         private async Task InitializeWebView2Async()
         {
             await webView.EnsureCoreWebView2Async(null);
@@ -91,17 +98,20 @@ namespace YoutubeDemo
 
         public void Comment_Response(List<CommentModel> models)
         {
-            foreach (var model in models)
-            {
-                // 2. 創建 Comments 元件，並傳入單個 CommentModel
-                // 這會觸發 Comments.xaml.cs 中的 Comments(CommentModel model) 建構函式
-                Components.Comment.Comments commentComponent = new Components.Comment.Comments(model);
+            commentViewModel.RenderComments(models);
+            
+            //var list = commentViewModel.RenderComments();
+            //foreach (var item in list)
+            //{
+            //    // 2. 創建 Comments 元件，並傳入單個 CommentModel
+            //    // 這會觸發 Comments.xaml.cs 中的 Comments(CommentModel model) 建構函式
+            //    //Components.Comment.Comments commentComponent = new Components.Comment.Comments(model);
 
-                // 3. 將新的 Comments 元件添加到 StackPanel 中
-                // 這是將 UI 顯示在右側欄位的必要步驟
-                CommentsHostPanel.Children.Add(commentComponent);
+            //    // 3. 將新的 Comments 元件添加到 StackPanel 中
+            //    // 這是將 UI 顯示在右側欄位的必要步驟
+            //    CommentsHostPanel.Children.Add(item);
 
-            }
+            //}
 
 
         }

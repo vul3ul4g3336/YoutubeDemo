@@ -5,24 +5,40 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 using System.Xml;
+using YoutubeDemo.Command;
+using YoutubeDemo.Presenter;
+using static YoutubeAPI.Videos.Model.GetCommentModel;
+using static YoutubeDemo.Contract.CommentContract;
 
 namespace YoutubeDemo.Components.ViewModels
 {
 
     public class CommentViewModel
     {
-        List<CommentModel> models;
-        public CommentViewModel(List<CommentModel> models)
+        public ObservableCollection<CommentModel> Comments { get; set; }
+        string ID = "UCsCh8O25n31QWEs90NgHBMA"; // UCsCh8O25n31QWEs90NgHBMA
+        public CommentViewModel()
+        {
+            Comments = new ObservableCollection<CommentModel>();
+        }
+
+        public void Remove(CommentModel model)
+        {
+            Comments.Remove(model);
+        }
+
+        public void RenderComments(List<CommentModel> list)
         {
 
-           
-            RenderComments(this.models);
+            foreach (var comment in list)
+            {
+
+                Comments.Add(comment);
+            }
         }
         
-        public void RenderComments(List<CommentModel> models)
-        {
-
-        }
     }
 }

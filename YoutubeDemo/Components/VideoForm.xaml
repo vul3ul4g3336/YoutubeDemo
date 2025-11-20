@@ -74,12 +74,12 @@
                     </Border>
 
                     <StackPanel Grid.Row="1" Margin="16">
-                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="16" Foreground="White" TextWrapping="Wrap" MaxHeight="42" TextTrimming="CharacterEllipsis" LineHeight="21" Cursor=""/>
-                        <TextBlock Text="{Binding ChannelTitle}" Foreground="#B0B0B0" FontSize="13" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding model.Title}" FontWeight="SemiBold" FontSize="16" Foreground="White" TextWrapping="Wrap" MaxHeight="42" TextTrimming="CharacterEllipsis" LineHeight="21" Cursor=""/>
+                        <TextBlock Text="{Binding model.ChannelTitle}" Foreground="#B0B0B0" FontSize="13" Margin="0,10,0,0"/>
 
                         <Border Background="#2A2A2A" CornerRadius="8" Padding="12" Margin="0,10,0,0">
                             <StackPanel>
-                                <TextBlock x:Name="DescriptionText" Text="{Binding description}" Foreground="#B0B0B0" FontSize="12" TextWrapping="Wrap" LineHeight="18" Cursor="">
+                                <TextBlock x:Name="DescriptionText" Text="{Binding model.description}" Foreground="#B0B0B0" FontSize="12" TextWrapping="Wrap" LineHeight="18" Cursor="">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="MaxHeight" Value="120"/>
@@ -134,7 +134,7 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Column="0" Text="{Binding ViewCount, StringFormat='觀看次數：{0}{0:N0}'}" Foreground="#808080" FontSize="12" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="0" Text="{Binding model.ViewCount, StringFormat='觀看次數：{0}{0:N0}'}" Foreground="#808080" FontSize="12" VerticalAlignment="Center"/>
 
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
                                 <Border x:Name="LikeButton" CornerRadius="20" Padding="12,8" Margin="0,0,8,0" Tag="like" Cursor="Hand" MouseLeftButtonDown="RatingButton_Click">
@@ -142,7 +142,7 @@
                                         <Style TargetType="Border">
                                             <Setter Property="Background" Value="#2A2A2A"/>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding LikeStatus}" Value="like">
+                                                <DataTrigger Binding="{Binding model.LikeStatus}" Value="like">
                                                     <Setter Property="Background" Value="#FF4A9EFF"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -158,7 +158,7 @@
                                         <Style TargetType="Border">
                                             <Setter Property="Background" Value="#2A2A2A"/>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding LikeStatus}" Value="dislike">
+                                                <DataTrigger Binding="{Binding model.LikeStatus}" Value="dislike">
                                                     <Setter Property="Background" Value="#FF5555"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -192,7 +192,16 @@
                 <TextBlock Text="留言" Grid.Row="0" Foreground="White" FontSize="16" FontWeight="SemiBold" Margin="16"/>
 
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                    <StackPanel x:Name="CommentsHostPanel" Margin="0,0,0,16"/>
+                    <!--<StackPanel x:Name="CommentsHostPanel" Margin="0,0,0,16"/>-->
+                    <ItemsControl ItemsSource="{Binding commentViewModel.Comments}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <comment:Comments></comment:Comments>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+
                 </ScrollViewer>
             </Grid>
 

@@ -1,9 +1,11 @@
 ﻿using PropertyChanged;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using YoutubeDemo.Models.Enum;
 
 namespace YoutubeDemo.Components
@@ -11,6 +13,9 @@ namespace YoutubeDemo.Components
     [AddINotifyPropertyChangedInterface]
     public class CommentModel
     {
+        
+        public Visibility VisibilityButton => AuthorChannelId == "UCsCh8O25n31QWEs90NgHBMA" ? Visibility.Visible : Visibility.Collapsed;
+        public string AuthorChannelId {  get; set; }
         public string CommentID { get; set; }
         public string AuthorDisplayName { get; set; }
         public string AuthorProfileImageUrl { get; set; }
@@ -29,8 +34,9 @@ namespace YoutubeDemo.Components
         public string TextDisplay { get; set; }
         public DateTime PublishedAt { get; set; }
         public int TotalReplyCount { get; set; }
-        public CommentModel[] replies { get; set; }
+
         public List<CommentSegment> commentSegment { get; set; }
+        public ObservableCollection<CommentModel> replies {  get; set; } //public CommentModel[] replies { get; set; }
     }
     public class CommentSegment
     {

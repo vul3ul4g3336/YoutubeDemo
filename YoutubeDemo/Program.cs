@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using YoutubeDemo.Forms;
+using YoutubeDemo.Login;
 
 namespace YoutubeDemo
 {
@@ -15,9 +16,10 @@ namespace YoutubeDemo
         [STAThread]
         static void Main()
         {
+          
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new SearchForm());
+           Application.Run(new LoginForm());
         }
     }
 }

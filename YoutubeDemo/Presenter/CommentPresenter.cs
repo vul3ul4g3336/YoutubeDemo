@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using YoutubeAPI.Videos;
 using YoutubeAPI.Videos.Model;
 using YoutubeDemo.Components;
 using static YoutubeDemo.Contract.CommentContract;
@@ -23,6 +24,12 @@ namespace YoutubeDemo.Presenter
             youtubeContext = new YoutubeAPI.YoutubeContext();
         }
 
+        public async Task Comment_Delete(string commentID)
+        {
+            var response = await youtubeContext.Comments.DeleteComment(commentID);
+
+        }
+
         public async Task Comment_Request(string videoID)
         {
             var response = await youtubeContext.Comments.GetComment(videoID);
@@ -38,7 +45,9 @@ namespace YoutubeDemo.Presenter
         .ForMember(x => x.PublishedAt, y => y.MapFrom(z => z.snippet.topLevelComment.snippet.publishedAt))
         .ForMember(x => x.TotalReplyCount, y => y.MapFrom(z => z.snippet.totalReplyCount))
         .ForMember(x => x.replies, y => y.MapFrom(z => z.snippet.totalReplyCount > 0 ? DataTransform(z.replies) : null))
-        .ForMember(x => x.commentSegment , y=> y.MapFrom(z => SegmentTextByUrls(z.snippet.topLevelComment.snippet.textDisplay)));
+        .ForMember(x => x.commentSegment, y => y.MapFrom(z => SegmentTextByUrls(z.snippet.topLevelComment.snippet.textDisplay)))
+        .ForMember(x => x.AuthorChannelId, y => y.MapFrom(z => z.snippet.topLevelComment.snippet.authorChannelId.value));
+        
             }).ToList();
             commentView.Comment_Response(models);
         }
@@ -55,7 +64,8 @@ namespace YoutubeDemo.Presenter
         .ForMember(x => x.LikeCount, y => y.MapFrom(z => z.snippet.likeCount))
         .ForMember(x => x.TextDisplay, y => y.MapFrom(z => z.snippet.textDisplay))
         .ForMember(x => x.PublishedAt, y => y.MapFrom(z => z.snippet.publishedAt))
-         .ForMember(x => x.commentSegment, y => y.MapFrom(z => SegmentTextByUrls(z.snippet.textDisplay)));
+         .ForMember(x => x.commentSegment, y => y.MapFrom(z => SegmentTextByUrls(z.snippet.textDisplay)))
+         .ForMember(x=>x.AuthorChannelId,y=> y.MapFrom(z=> z.snippet.authorChannelId.value));
             }).ToArray();
             
             return models;
@@ -102,6 +112,14 @@ namespace YoutubeDemo.Presenter
                 return segments;
             
 
+        }
+        public async Task PostNewCommentThread(string videoID,string text)
+        {
+            var response = await youtubeContext.Comments.PostNewCommentThread(videoID, text);
+        }
+        public async Task PostCommentReply(string commentID,string text)
+        {
+            var response = await youtubeContext.Comments.PostCommentReply(commentID, text);
         }
     }
 }
