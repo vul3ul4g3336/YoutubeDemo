@@ -39,6 +39,7 @@ namespace YoutubeDemo
         public SearchForm()
         {
             InitializeComponent();
+
             this.Width = 1400;
             this.videoCardContainer.Width = 1300;
             paginations = new Paginations();
@@ -46,8 +47,7 @@ namespace YoutubeDemo
             paginations.PageChanged += Paginations_PageChanged;
             comboBox1.DataSource = Enum.GetValues(typeof(SearchType));
             requestModel.category = Models.Enum.CategoryType.全部;
-            searchPresenter = new SearchPresenter(this);
-            searchPresenter.SearchRequest(requestModel);
+           
             elementHost1.Child = paginations;/*show();*/
         }
 
@@ -136,16 +136,14 @@ namespace YoutubeDemo
 
         }
 
-        private void SearchForm_Load(object sender, EventArgs e)
+        private  async void SearchForm_Load(object sender, EventArgs e)
         {
-            var cred = CredentialManager.Load<GoogleCredentialModel>("MyYoutubeApp_Token");
-            if (cred != null) button2.Text = "登出";
-            else button2.Text = "登入";
+            //var cred = CredentialManager.Load<GoogleCredentialModel>("MyYoutubeApp_Token");
+            //if (cred != null) button2.Text = "登出";
+            await User.Setup();
 
-
-
-
-
+             searchPresenter = new SearchPresenter(this);
+            await searchPresenter.SearchRequest(requestModel);
 
 
             // ==========================================================
@@ -208,25 +206,9 @@ namespace YoutubeDemo
 
         private void button2_Click(object sender, EventArgs e)
         {
-            var cred = new  Credential { Target = "MyYoutubeApp_Token" };
-            if (cred.Load())
-            {
-                
-                cred.Delete();
-                Console.WriteLine("成功");
-            }
+            User.SignOut();
             this.Close();
-            //switch (button.Text)
-            //{
-            //    case "登入":
-            //        var cred = new Credential { Target = "MyYoutubeApp_Token" };
-            //        cred.AccessToken = dto.access_token;
-            //        cred.ExpireTime = DateTime.Now.AddSeconds(dto.expires_in)
-            //                                .ToString("yyyy-MM-dd HH:mm:ss");
-            //        break;
-            //    case "登出":
-            //        break;
-            //}
+            
         }
     }
 }

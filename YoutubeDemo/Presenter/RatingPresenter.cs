@@ -13,14 +13,14 @@ namespace YoutubeDemo.Presenter
     {
         public event EventHandler<string> ratingEvent;
         private IRatingView ratingView;
-        public YoutubeAPI.YoutubeContext youtubeContext;
+        
         public RatingPresenter()
         {
-            youtubeContext = new YoutubeAPI.YoutubeContext();   
+             
         }
         public async Task RatingRequest(string VideoID, string rating)
         {
-            var response = await youtubeContext.Videos.SetVideoRating(VideoID, rating);
+            var response = await User.Context.Videos.SetVideoRating(VideoID, rating);
         }
     }
 }

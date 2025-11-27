@@ -115,5 +115,10 @@ namespace YoutubeDemo
 
 
         }
+
+        public async void Comment_Request()
+        {
+            commentPresenter.PostNewCommentThread()
+        }
     }
 }

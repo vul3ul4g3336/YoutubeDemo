@@ -39,6 +39,10 @@ namespace YoutubeDemo.Components.ViewModels
                 Comments.Add(comment);
             }
         }
+        public void AddComments(CommentModel model)
+        {
+            Comments.Add(model);
+        }
         
     }
 }

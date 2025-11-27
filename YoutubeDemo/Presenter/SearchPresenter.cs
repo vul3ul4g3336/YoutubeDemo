@@ -17,10 +17,10 @@ namespace YoutubeDemo.Presenter
     {
         public event EventHandler<string> ratingEvent;
         private ISearchView searchView;
-        public YoutubeAPI.YoutubeContext youtubeContext;
+       
         public SearchPresenter(ISearchView searchView)
         {
-            youtubeContext = new YoutubeAPI.YoutubeContext();
+            
             this.searchView = searchView;
         }
 
@@ -33,7 +33,7 @@ namespace YoutubeDemo.Presenter
                 var res = await models;
                 var tasks = res.Select(async x =>
                 {
-                    var rating = await youtubeContext.Videos.GetVideoRating(x.VideoID);  // 
+                    var rating = await User.Context.Videos.GetVideoRating(x.VideoID);  // 
                     var ratingStr = rating.Data?.items?.FirstOrDefault()?.rating; // null 
 
                     x.LikeStatus = Enum.TryParse<LikeStatusEnum>(ratingStr, true, out var status)
@@ -50,8 +50,8 @@ namespace YoutubeDemo.Presenter
         {
 
             var twTrendingResponseresponse = model.category == Models.Enum.CategoryType.全部 ?
-                            await youtubeContext.Videos.GetVideos("TW", "mostPopular")
-                           : await youtubeContext.Videos.GetVideos(regionCode: "TW", chart: "mostPopular", videoCategoryId: ((int)model.category).ToString());
+                            await User.Context.Videos.GetVideos("TW", "mostPopular")
+                           : await User.Context.Videos.GetVideos(regionCode: "TW", chart: "mostPopular", videoCategoryId: ((int)model.category).ToString());
 
             List<VideoCardModel> videoCardModels = Utility.Mapper.Map<GetVideosResponseModel.Item, VideoCardModel>
                 (twTrendingResponseresponse.Data.items, mapping =>
@@ -70,10 +70,10 @@ namespace YoutubeDemo.Presenter
         private async Task<List<VideoCardModel>> SearchKeywordRequest(SearchRequestModel model)
         {
             List<VideoCardModel> videoCardModels = new List<VideoCardModel>();
-            var searchResponse = await youtubeContext.Channel.SearchByKeyword(model.keyword, model.type.ToString());
+            var searchResponse = await User.Context.Channel.SearchByKeyword(model.keyword, model.type.ToString());
             if (model.type == Models.Enum.SearchType.shorts)
             {
-                List<Task<HttpUtility.HttpResponse<VideoDetailModel>>> tasks = searchResponse.Data.items.Select(x => youtubeContext.Videos.GetVideoDetail(x.id.videoId)).ToList();
+                List<Task<HttpUtility.HttpResponse<VideoDetailModel>>> tasks = searchResponse.Data.items.Select(x => User.Context.Videos.GetVideoDetail(x.id.videoId)).ToList();
                 #region
                 //var results = await Task.WhenAll(tasks);
                 //var probe = results.Select((r, idx) => new

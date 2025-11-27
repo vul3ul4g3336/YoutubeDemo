@@ -14,7 +14,7 @@ namespace YoutubeDemo.Components
     public class CommentModel
     {
         
-        public Visibility VisibilityButton => AuthorChannelId == "UCsCh8O25n31QWEs90NgHBMA" ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility VisibilityButton => AuthorChannelId == User.ID ? Visibility.Visible : Visibility.Collapsed;
         public string AuthorChannelId {  get; set; }
         public string CommentID { get; set; }
         public string AuthorDisplayName { get; set; }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using YoutubeAPI.Auth;
 using YoutubeDemo.Forms;
 using YoutubeDemo.Login;
 
@@ -16,10 +17,12 @@ namespace YoutubeDemo
         [STAThread]
         static void Main()
         {
-          
+            Auth auth = new Auth();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-           Application.Run(new LoginForm());
+            Form form = auth.IsLogin ? new SearchForm() : new LoginForm();
+
+            Application.Run(form);
         }
     }
 }
