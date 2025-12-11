@@ -13,7 +13,9 @@ namespace YoutubeDemo.Contract
         {
             Task Comment_Request(string videoID);
             Task Comment_Delete(string commentID);
-            Task PostNewCommentThread(string videoID, string text);
+            Task<CommentModel> PostNewCommentThread(string videoID, string text);
+            Task<CommentModel> PostCommentReply(string commentID, string text);
+            Task<CommentModel> EditComment(string videoID, string text);
         }
         public interface ICommentView
         {

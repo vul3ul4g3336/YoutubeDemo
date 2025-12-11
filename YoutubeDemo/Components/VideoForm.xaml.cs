@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -29,7 +30,7 @@ namespace YoutubeDemo
         public CommentViewModel commentViewModel { get; set; }
         
         IRatingPresenter ratingPresenter = new RatingPresenter();
-        ICommentPresenter commentPresenter;
+       public ICommentPresenter commentPresenter;
 
         public static VideoForm CurrentInstance { get; private set; }
 
@@ -116,9 +117,16 @@ namespace YoutubeDemo
 
         }
 
-        public async void Comment_Request()
+        public async void Comment_Request(object sender, RoutedEventArgs e)
         {
-            commentPresenter.PostNewCommentThread()
+            var text = commentViewModel.CommentMessage;
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return;
+            }
+            var commentModel = await commentPresenter.PostNewCommentThread(model.VideoID,text);
+            commentViewModel.AddComments(commentModel);
+            commentViewModel.CommentMessage = string.Empty;
         }
     }
 }

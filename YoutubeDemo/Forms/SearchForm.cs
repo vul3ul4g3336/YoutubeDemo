@@ -36,6 +36,9 @@ namespace YoutubeDemo
         SearchRequestModel requestModel = new SearchRequestModel();
         PaginationsViewModel viewModel = new PaginationsViewModel();
         List<CardViewModel> videos;
+
+
+
         public SearchForm()
         {
             InitializeComponent();
@@ -142,7 +145,7 @@ namespace YoutubeDemo
             //if (cred != null) button2.Text = "登出";
             await User.Setup();
 
-             searchPresenter = new SearchPresenter(this);
+            searchPresenter = new SearchPresenter(this);
             await searchPresenter.SearchRequest(requestModel);
 
 

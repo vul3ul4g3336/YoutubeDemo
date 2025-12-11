@@ -19,6 +19,7 @@
             <ColumnDefinition Width="2*"/>
         </Grid.ColumnDefinitions>
 
+        <!-- 左側區域 (保留原樣) -->
         <Border x:Name="MainCard" 
                 Grid.Column="0"
                 Margin="10,10,5,10"
@@ -176,6 +177,7 @@
             </ScrollViewer>
         </Border>
 
+        <!-- 右側區域 -->
         <Border Grid.Column="1"
                 Background="#1C1C1C"
                 BorderBrush="#2A2A2A"
@@ -186,13 +188,105 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Text="留言" Grid.Row="0" Foreground="White" FontSize="16" FontWeight="SemiBold" Margin="16"/>
 
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                    <!--<StackPanel x:Name="CommentsHostPanel" Margin="0,0,0,16"/>-->
+                <Grid Grid.Row="1" Margin="16,0,16,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Column="0" Grid.Row="0" Width="40" Height="40" CornerRadius="20" Background="#5C6BC0" VerticalAlignment="Top" Margin="0,5,12,0">
+                        <TextBlock Text="W" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="18" FontWeight="Normal"/>
+                    </Border>
+
+                    <!-- TextBox:
+                         保留了您的 Binding，並加入了 UpdateSourceTrigger=PropertyChanged -->
+                    <TextBox x:Name="CommentInputBox"
+                             Grid.Column="1" Grid.Row="0" 
+                             Foreground="White" 
+                             Background="Transparent" 
+                             BorderBrush="#3F3F3F" 
+                             BorderThickness="0,0,0,1" 
+                             Padding="0,5,0,5" 
+                             FontSize="14" 
+                             TextWrapping="Wrap" 
+                             Text="{Binding commentViewModel.CommentMessage, UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="True"
+                             CaretBrush="White">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="TextBox">
+                                            <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                                                <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsKeyboardFocused" Value="true">
+                                                    <Setter Property="BorderBrush" TargetName="border" Value="White"/>
+                                                    <Setter Property="BorderThickness" TargetName="border" Value="0,0,0,2"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
+
+                    <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+
+                        <!-- 留言按鈕：
+                             邏輯：有字才能按 (IsEnabled)，沒字變灰，有字變藍。 -->
+                        <Button Content="留言" Click="Comment_Request" Cursor="Hand" BorderThickness="0">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="#3EA6FF"/>
+                                    <Setter Property="Foreground" Value="Black"/>
+
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" Padding="16,8" CornerRadius="18">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextElement.FontWeight="SemiBold"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+
+                                    <Style.Triggers>
+                                        <!-- 當字數為 0 時，禁用並變灰 -->
+                                        <DataTrigger Binding="{Binding ElementName=CommentInputBox, Path=Text.Length}" Value="0">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Setter Property="Background" Value="#272727"/>
+                                            <Setter Property="Foreground" Value="#717171"/>
+                                        </DataTrigger>
+
+                                        <!-- 滑鼠滑過且有效時的效果 -->
+                                        <MultiTrigger>
+                                            <MultiTrigger.Conditions>
+                                                <Condition Property="IsMouseOver" Value="True"/>
+                                                <Condition Property="IsEnabled" Value="True"/>
+                                            </MultiTrigger.Conditions>
+                                            <Setter Property="Background" Value="#65B8FF"/>
+                                        </MultiTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <ItemsControl ItemsSource="{Binding commentViewModel.Comments}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -200,8 +294,6 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-
-
                 </ScrollViewer>
             </Grid>
 

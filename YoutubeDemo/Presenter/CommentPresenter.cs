@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using YoutubeAPI.Comments;
+using YoutubeAPI.Comments.Model;
 using YoutubeAPI.Videos;
 using YoutubeAPI.Videos.Model;
 using YoutubeDemo.Components;
@@ -34,6 +35,8 @@ namespace YoutubeDemo.Presenter
         public async Task Comment_Request(string videoID)
         {
             var response = await User.Context.Comments.GetComment(videoID);
+            if (response.IsSuccess == false) return;
+
             List<CommentModel> models = Utility.Mapper.Map<GetCommentModel.Item, CommentModel>(response.Data.items, mapping =>
             {
                 mapping.ForMember(x => x.CommentID, y => y.MapFrom(z => z.snippet.topLevelComment.id))
@@ -46,7 +49,8 @@ namespace YoutubeDemo.Presenter
         .ForMember(x => x.PublishedAt, y => y.MapFrom(z => z.snippet.topLevelComment.snippet.publishedAt))
         .ForMember(x => x.TotalReplyCount, y => y.MapFrom(z => z.snippet.totalReplyCount))
         .ForMember(x => x.replies, y => y.MapFrom(z => z.snippet.totalReplyCount > 0 ? DataTransform(z.replies) : null))
-        .ForMember(x => x.commentSegment, y => y.MapFrom(z => SegmentTextByUrls(z.snippet.topLevelComment.snippet.textDisplay)))
+        .ForMember(x => x.TextOriginal, y => y.MapFrom(z => z.snippet.topLevelComment.snippet.textOriginal))
+        .ForMember(x => x.CanReply, y => y.MapFrom(z => z.snippet.canReply))
         .ForMember(x => x.AuthorChannelId, y => y.MapFrom(z => z.snippet.topLevelComment.snippet.authorChannelId.value));
 
             }).ToList();
@@ -55,6 +59,7 @@ namespace YoutubeDemo.Presenter
 
         public CommentModel[] DataTransform(GetCommentModel.Replies replies)
         {
+            if (replies == null) return null;
             CommentModel[] models = Utility.Mapper.Map<GetCommentModel.Comment, CommentModel>(replies.comments, mapping =>
             {
                 mapping.ForMember(x => x.CommentID, y => y.MapFrom(z => z.id))
@@ -64,8 +69,9 @@ namespace YoutubeDemo.Presenter
         .ForMember(x => x.ViewerRatingString, y => y.MapFrom(z => z.snippet.viewerRating))
         .ForMember(x => x.LikeCount, y => y.MapFrom(z => z.snippet.likeCount))
         .ForMember(x => x.TextDisplay, y => y.MapFrom(z => z.snippet.textDisplay))
+        .ForMember(x => x.TextOriginal, y => y.MapFrom(z => z.snippet.textOriginal))
         .ForMember(x => x.PublishedAt, y => y.MapFrom(z => z.snippet.publishedAt))
-         .ForMember(x => x.commentSegment, y => y.MapFrom(z => SegmentTextByUrls(z.snippet.textDisplay)))
+         //.ForMember(x => x.commentSegment, y => y.MapFrom(z => SegmentTextByUrls(z.snippet.textDisplay)))
          .ForMember(x => x.AuthorChannelId, y => y.MapFrom(z => z.snippet.authorChannelId.value));
             }).ToArray();
 
@@ -121,22 +127,63 @@ namespace YoutubeDemo.Presenter
             {
                 mapping.ForMember(x => x.AuthorChannelId, y => y.MapFrom(z => z.snippet.channelId))
                 .ForMember(x => x.CommentID, y => y.MapFrom(z => z.id))
-                .ForMember(x =>x.AuthorDisplayName , y=>y.MapFrom(z=>z.snippet.topLevelComment.snippet.authorDisplayName))
-                .ForMember(x=>x.AuthorProfileImageUrl,y=>y.MapFrom(z=>z.snippet.topLevelComment.snippet.authorProfileImageUrl))
-                .ForMember(x=>x.CanRate, y=>y.MapFrom(z=>z.snippet.topLevelComment.snippet.canRate))
-                .ForMember(x=>x.ViewerRatingString,y=>y.MapFrom(z=>z.snippet.topLevelComment.snippet.viewerRating))
-                .ForMember(x => x.LikeCount ,y=>y.MapFrom(z=>z.snippet.topLevelComment.snippet.likeCount))
-                .ForMember(x=>x.TextOriginal,y=>y.MapFrom(z=>z.snippet.topLevelComment.snippet.textOriginal))
-                .ForMember(x=>x.TextDisplay,y=>y.MapFrom(z=>z.snippet.topLevelComment.snippet.textDisplay))
+                .ForMember(x => x.AuthorDisplayName, y => y.MapFrom(z => z.snippet.topLevelComment.snippet.authorDisplayName))
+                .ForMember(x => x.AuthorProfileImageUrl, y => y.MapFrom(z => z.snippet.topLevelComment.snippet.authorProfileImageUrl))
+                .ForMember(x => x.CanRate, y => y.MapFrom(z => z.snippet.topLevelComment.snippet.canRate))
+                .ForMember(x => x.ViewerRatingString, y => y.MapFrom(z => z.snippet.topLevelComment.snippet.viewerRating))
+                .ForMember(x => x.LikeCount, y => y.MapFrom(z => z.snippet.topLevelComment.snippet.likeCount))
+                .ForMember(x => x.TextDisplay, y => y.MapFrom(z => z.snippet.topLevelComment.snippet.textDisplay))
+                .ForMember(x => x.TextOriginal, y => y.MapFrom(z => z.snippet.topLevelComment.snippet.textOriginal))
                 .ForMember(x => x.PublishedAt, y => y.MapFrom(z => z.snippet.topLevelComment.snippet.publishedAt))
-                 .ForMember(x => x.commentSegment, y => y.MapFrom(z => SegmentTextByUrls(z.snippet.topLevelComment.snippet.textDisplay)))
          .ForMember(x => x.AuthorChannelId, y => y.MapFrom(z => z.snippet.topLevelComment.snippet.authorChannelId.value));
             });
-            return model;   
+
+            return model;
         }
-        public async Task PostCommentReply(string commentID, string text)
+        public async Task<CommentModel> PostCommentReply(string commentID, string text)
         {
-            var response = await User.Context.Comments.PostCommentReply(commentID, text);
+            string _commentID = commentID.Split('.')[0];
+            var response = await User.Context.Comments.PostCommentReply(_commentID, text);
+            CommentModel model = Utility.Mapper.Map<PostCommentReplyResponseModel, CommentModel>(response.Data, mapping =>
+            {
+                mapping.ForMember(x => x.CommentID, y => y.MapFrom(z => z.id))
+               .ForMember(x => x.AuthorDisplayName, y => y.MapFrom(z => z.snippet.authorDisplayName))
+               .ForMember(x => x.AuthorProfileImageUrl, y => y.MapFrom(z => z.snippet.authorProfileImageUrl))
+               .ForMember(x => x.CanRate, y => y.MapFrom(z => z.snippet.canRate))
+               .ForMember(x => x.ViewerRatingString, y => y.MapFrom(z => z.snippet.viewerRating))
+               .ForMember(x => x.LikeCount, y => y.MapFrom(z => z.snippet.likeCount))
+               .ForMember(x => x.TextDisplay, y => y.MapFrom(z => z.snippet.textDisplay))
+               .ForMember(x => x.TextOriginal, y => y.MapFrom(z => z.snippet.textOriginal))
+               .ForMember(x => x.PublishedAt, y => y.MapFrom(z => z.snippet.publishedAt))
+               .ForMember(x => x.ParentId, y => y.MapFrom(z => z.snippet.parentId))
+               .ForMember(x => x.AuthorChannelId, y => y.MapFrom(z => z.snippet.authorChannelId.value));
+
+            });
+
+            return model;
+        }
+
+        public async Task<CommentModel> EditComment(string videoID, string text)
+        {
+            var response = await User.Context.Comments.EditComment(videoID, text);
+            CommentModel model = Utility.Mapper.Map<EditCommentResponseModel, CommentModel>(response.Data, mapping =>
+            {
+                mapping.ForMember(x => x.AuthorChannelId, y => y.MapFrom(z => z.snippet.channelId))
+                .ForMember(x => x.CommentID, y => y.MapFrom(z => z.id))
+                .ForMember(x => x.AuthorDisplayName, y => y.MapFrom(z => z.snippet.authorDisplayName))
+                .ForMember(x => x.AuthorProfileImageUrl, y => y.MapFrom(z => z.snippet.authorProfileImageUrl))
+                .ForMember(x => x.CanRate, y => y.MapFrom(z => z.snippet.canRate))
+                .ForMember(x => x.ViewerRatingString, y => y.MapFrom(z => z.snippet.viewerRating))
+                .ForMember(x => x.LikeCount, y => y.MapFrom(z => z.snippet.likeCount))
+                .ForMember(x => x.TextDisplay, y => y.MapFrom(z => z.snippet.textDisplay))
+                .ForMember(x => x.TextOriginal, y => y.MapFrom(z => z.snippet.textOriginal))
+                
+                .ForMember(x => x.PublishedAt, y => y.MapFrom(z => z.snippet.publishedAt))
+
+         //.ForMember(x => x.commentSegment, y => y.MapFrom(z => SegmentTextByUrls(z.snippet.textDisplay)))
+         .ForMember(x => x.AuthorChannelId, y => y.MapFrom(z => z.snippet.authorChannelId.value));
+            });
+            return model;
         }
     }
 }
