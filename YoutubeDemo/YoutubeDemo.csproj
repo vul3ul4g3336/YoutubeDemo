@@ -58,6 +58,9 @@
     <Reference Include="Microsoft.Web.WebView2.Wpf, Version=1.0.3537.50, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.WebView2.1.0.3537.50\lib\net462\Microsoft.Web.WebView2.Wpf.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Xaml.Behaviors, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Xaml.Behaviors.Wpf.1.1.135\lib\net462\Microsoft.Xaml.Behaviors.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -69,6 +72,9 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -89,44 +95,60 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command\RelayCommand.cs" />
-    <Compile Include="Components\Card.xaml.cs">
+    <Compile Include="Components\Card\Card.xaml.cs">
       <DependentUpon>Card.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Comment\Comments.xaml.cs">
       <DependentUpon>Comments.xaml</DependentUpon>
     </Compile>
     <Compile Include="Components\Comment\CommentSegment.cs" />
-    <Compile Include="Components\PaginationComponent\PageInfo.cs" />
-    <Compile Include="Components\Paginations.xaml.cs">
+    <Compile Include="Components\Pagination\PageInfo.cs" />
+    <Compile Include="Components\Pagination\Paginations.xaml.cs">
       <DependentUpon>Paginations.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Components\ViewModels\CardViewModel.cs" />
-    <Compile Include="Components\PaginationComponent\Pagination.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Components\PaginationComponent\Pagination.Designer.cs">
-      <DependentUpon>Pagination.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Components\Card\CardViewModel.cs" />
     <Compile Include="Components\Comment\CommentModel.cs" />
-    <Compile Include="Components\ViewModels\CommentViewModel.cs" />
+    <Compile Include="Components\Comment\CommentViewModel.cs" />
+    <Compile Include="Components\PlayListCard\PlayListCard.xaml.cs">
+      <DependentUpon>PlayListCard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\PlayListCard\PlayListCardViewModel.cs" />
+    <Compile Include="Components\PlayListCard\PlayListVideoModel.cs" />
+    <Compile Include="Components\PlayListItems\PlayListItems.xaml.cs">
+      <DependentUpon>PlayListItems.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\UploadVideo\UploadContract.cs" />
+    <Compile Include="Components\UploadVideo\UploadModel.cs" />
+    <Compile Include="Components\UploadVideo\UploadPresenter.cs" />
+    <Compile Include="Components\UploadVideo\UploadVideoCard.xaml.cs">
+      <DependentUpon>UploadVideoCard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\UploadVideo\UploadViewModel.cs" />
+    <Compile Include="Components\VideoPlayer\VideoPlayers.xaml.cs">
+      <DependentUpon>VideoPlayers.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\VideoPlayer\VideoPlayerPresenter.cs" />
+    <Compile Include="Components\VideoPlayer\VideoPlayerViewModel.cs" />
+    <Compile Include="Components\VideoPlayer\WebView2Helper.cs" />
     <Compile Include="Contract\CommentContract.cs" />
     <Compile Include="Contract\PaginationContract.cs" />
-    <Compile Include="Components\PaginationComponent\PaginationPresenter.cs" />
-    <Compile Include="Components\Rating.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Components\Rating.Designer.cs">
-      <DependentUpon>Rating.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Components\VideoCard.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Components\VideoCard.Designer.cs">
-      <DependentUpon>VideoCard.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Components\ViewModels\PaginationsViewModel.cs" />
+    <Compile Include="Components\Pagination\PaginationPresenter.cs" />
+    <Compile Include="Components\Pagination\PaginationsViewModel.cs" />
+    <Compile Include="Contract\PlayListContract.cs" />
     <Compile Include="Contract\RatingContract.cs" />
     <Compile Include="Contract\SearchVideoContract.cs" />
+    <Compile Include="Forms\PlayListDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\PlayListDialog.Designer.cs">
+      <DependentUpon>PlayListDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\UploadForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\UploadForm.Designer.cs">
+      <DependentUpon>UploadForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\VideosForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -139,11 +161,16 @@
     <Compile Include="Login\LoginForm.Designer.cs">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\DTOs\PlayListModel.cs" />
     <Compile Include="Models\Enum\CategoryType.cs" />
     <Compile Include="Models\Enum\CategoryTypeEnum.cs" />
     <Compile Include="Models\Enum\SearchType.cs" />
     <Compile Include="Models\DTOs\SearchRequestModel.cs" />
-    <Compile Include="Presenter\CommentPresenter.cs" />
+    <Compile Include="Components\Comment\CommentPresenter.cs" />
+    <Compile Include="Pages\PlayListForm.xaml.cs">
+      <DependentUpon>PlayListForm.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Presenter\PlayListPresenter.cs" />
     <Compile Include="Presenter\RatingPresenter.cs" />
     <Compile Include="Presenter\SearchPresenter.cs" />
     <Compile Include="Forms\SearchForm.cs">
@@ -155,29 +182,28 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\VideoCardModel.cs" />
-    <Compile Include="LikeStatusEnum.cs" />
+    <Compile Include="Models\Enum\LikeStatusEnum.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="User.cs" />
+    <Compile Include="Login\User.cs" />
+    <Compile Include="Utility\Converter.cs" />
+    <Compile Include="Utility\ImageDownload.cs" />
     <Compile Include="Utility\Mapper.cs" />
-    <Compile Include="SearchViewModel.cs" />
-    <Compile Include="Components\VideoForm.xaml.cs">
+    <Compile Include="Components\ViewModels\SearchViewModel.cs" />
+    <Compile Include="Pages\VideoForm.xaml.cs">
       <DependentUpon>VideoForm.xaml</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Components\PaginationComponent\Pagination.resx">
-      <DependentUpon>Pagination.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Components\Rating.resx">
-      <DependentUpon>Rating.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Components\VideoCard.resx">
-      <DependentUpon>VideoCard.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\PlayListDialog.resx">
+      <DependentUpon>PlayListDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\SearchForm.resx">
       <DependentUpon>SearchForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\UploadForm.resx">
+      <DependentUpon>UploadForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\VideosForm.resx">
       <DependentUpon>VideosForm.cs</DependentUpon>
@@ -208,7 +234,7 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Components\Card.xaml">
+    <Page Include="Components\Card\Card.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -216,11 +242,31 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\Paginations.xaml">
+    <Page Include="Components\Pagination\Paginations.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Components\VideoForm.xaml">
+    <Page Include="Components\PlayListCard\PlayListCard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\PlayListItems\PlayListItems.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\UploadVideo\UploadVideoCard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\PlayListForm.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\VideoForm.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\VideoPlayer\VideoPlayers.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

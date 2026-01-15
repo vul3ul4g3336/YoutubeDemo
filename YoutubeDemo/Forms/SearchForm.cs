@@ -16,27 +16,31 @@ using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using YoutubeAPI;
 using YoutubeAPI.Channel;
+using YoutubeAPI.PlayLists;
 using YoutubeAPI.Videos;
 using YoutubeAPI.Videos.Model;
 using YoutubeDemo.Components;
+using YoutubeDemo.Components.PlayListCard;
 using YoutubeDemo.Components.ViewModels;
+using YoutubeDemo.Forms;
 using YoutubeDemo.Models;
+using YoutubeDemo.Models.DTOs;
 using YoutubeDemo.Models.Enum;
 using YoutubeDemo.Presenter;
-
+using YoutubeDemo.Utility;
+using static YoutubeDemo.Contract.PlayListContract;
 using static YoutubeDemo.Contract.SearchVideoContract;
 
 namespace YoutubeDemo
 {
-    public partial class SearchForm : Form, ISearchView
+    public partial class SearchForm : Form, ISearchView, IPlayListView
     {
-
+        private IPlayListPresenter playListPresenter;
         private ISearchPresenter searchPresenter;
         private Paginations paginations;
         SearchRequestModel requestModel = new SearchRequestModel();
-        PaginationsViewModel viewModel = new PaginationsViewModel();
         List<CardViewModel> videos;
-
+        PlayListVideoModel PlayListVideoModel = new PlayListVideoModel();
 
 
         public SearchForm()
@@ -46,25 +50,32 @@ namespace YoutubeDemo
             this.Width = 1400;
             this.videoCardContainer.Width = 1300;
             paginations = new Paginations();
-
-            paginations.PageChanged += Paginations_PageChanged;
+            elementHost1.Child = paginations;/*show();*/
+            playListPresenter = new PlayListPresenter();
+            paginations.paginationsViewModel.PageChanged += Paginations_PageChanged;
             comboBox1.DataSource = Enum.GetValues(typeof(SearchType));
             requestModel.category = Models.Enum.CategoryType.全部;
-           
-            elementHost1.Child = paginations;/*show();*/
+
+
+
         }
 
         private void Paginations_PageChanged(object sender, int e) // 2/3/4/5/6 n頁
         {
             videoCardContainer.Controls.Clear();
-            for (int i = 0; i < paginations.PageSize; i++)
+            for (int i = 0; i < paginations.paginationsViewModel.PageSize; i++)
             {
-                var infoPanel = new Card(videos[((e - 1) * paginations.PageSize) + i]);
+                if (i > paginations.Count) return;
+                int videoIndex = ((e - 1) * paginations.paginationsViewModel.PageSize) + i;
+                if (videoIndex == paginations.Count) return;
+                var infoPanel = new Card(videos[videoIndex]);
                 //infoPanel.ratingClick += RatingClick;
                 ElementHost elementHost = new ElementHost();
                 elementHost.Width = 430;
                 elementHost.Height = 380;
                 elementHost.Child = infoPanel;
+                elementHost.Tag = videos[videoIndex].VideoID;
+                elementHost.ContextMenuStrip = contextMenuStrip2;
                 videoCardContainer.Controls.Add(elementHost);
             }
         }
@@ -77,7 +88,8 @@ namespace YoutubeDemo
             }).ToList();
 
             videoCardContainer.Controls.Clear();
-            paginations.Total = this.videos.Count;
+            paginations.Count = this.videos.Count;
+            //testPagination.viewModel.RenderPages()
 
         }
 
@@ -139,12 +151,12 @@ namespace YoutubeDemo
 
         }
 
-        private  async void SearchForm_Load(object sender, EventArgs e)
+        private async void SearchForm_Load(object sender, EventArgs e)
         {
             //var cred = CredentialManager.Load<GoogleCredentialModel>("MyYoutubeApp_Token");
             //if (cred != null) button2.Text = "登出";
             await User.Setup();
-
+            await GetPlayListRequest();
             searchPresenter = new SearchPresenter(this);
             await searchPresenter.SearchRequest(requestModel);
 
@@ -211,7 +223,59 @@ namespace YoutubeDemo
         {
             User.SignOut();
             this.Close();
-            
+
+        }
+
+        private async Task GetPlayListRequest()
+        {
+            if (User.playListModels == null)
+            {
+                await playListPresenter.GetPlayListRequest();
+            }
+        }
+
+        private async void addToPlaylistMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+
+            var parent = (ToolStripMenuItem)sender;
+            parent.DropDownItems.Clear();
+            string videoID = (parent.Owner as ContextMenuStrip)?.SourceControl?.Tag?.ToString();
+            foreach (var p in User.playListModels)
+            {
+
+                var item = new ToolStripMenuItem(p.title);
+                item.Click += async (sender, e) =>
+                {
+                    var IsSuccess = await playListPresenter.AddVideoToPlaylist(videoID, p.id);
+                    string message = IsSuccess ? "收藏成功!" : "收藏失敗";
+                    MessageBox.Show(message);
+                };
+
+
+                parent.DropDownItems.Add(item);
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Form form = new PlayListDialog();
+            form.ShowDialog();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            // 修改這一行
+            openFileDialog.Filter = "影片檔|*.mp4";
+            System.Windows.Forms.DialogResult result = openFileDialog.ShowDialog();
+            string path = openFileDialog.FileName;
+            UploadForm uploadForm = new UploadForm(path);
+            uploadForm.ShowDialog();
+        }
+
+        public void XXX()
+        {
+            throw new NotImplementedException();
         }
     }
 }

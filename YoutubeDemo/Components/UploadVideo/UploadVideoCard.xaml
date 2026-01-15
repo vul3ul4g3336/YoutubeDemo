@@ -1,0 +1,472 @@
+﻿<UserControl x:Class="YoutubeDemo.Components.UploadVideo.UploadVideoCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:YoutubeDemo.Components.UploadVideo"
+             xmlns:util="clr-namespace:YoutubeDemo.Utility"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             mc:Ignorable="d" 
+             d:DesignHeight="850" d:DesignWidth="1141">
+
+    <UserControl.Resources>
+        <util:Converter x:Key="MyEnumConverter" />
+
+        <!-- 文字框樣式 -->
+        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="#1A1A1A"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#3F3F3F"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="CaretBrush" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                CornerRadius="4"
+                                SnapsToDevicePixels="True">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                          Focusable="false" 
+                                          HorizontalScrollBarVisibility="Hidden" 
+                                          VerticalScrollBarVisibility="Auto"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#717171"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#3EA6FF"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- RadioButton 樣式 -->
+        <Style x:Key="ModernRadioButtonStyle" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Grid Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- 自訂圓形選擇器 -->
+                            <Grid Grid.Column="0" Width="20" Height="20" Margin="0,0,12,0">
+                                <Ellipse x:Name="OuterCircle" 
+                                         Stroke="#717171" 
+                                         StrokeThickness="2" 
+                                         Fill="Transparent"/>
+                                <Ellipse x:Name="InnerCircle" 
+                                         Width="10" 
+                                         Height="10" 
+                                         Fill="#3EA6FF" 
+                                         Visibility="Collapsed"/>
+                            </Grid>
+
+                            <ContentPresenter Grid.Column="1" 
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="OuterCircle" Property="Stroke" Value="#3EA6FF"/>
+                                <Setter TargetName="InnerCircle" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="OuterCircle" Property="Stroke" Value="#AAAAAA"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Combox樣式-->
+        <Style x:Key="ModernComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Background" Value="#1A1A1A"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#3F3F3F"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton x:Name="ToggleButton" 
+                                        BorderBrush="{TemplateBinding BorderBrush}" 
+                                        BorderThickness="{TemplateBinding BorderThickness}" 
+                                        Background="{TemplateBinding Background}" 
+                                        IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" 
+                                        Focusable="false"
+                                        ClickMode="Press">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="templateBorder" CornerRadius="4" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="40"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Path x:Name="Arrow" Grid.Column="1" Fill="#AAAAAA" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 5 5 L 10 0 Z"/>
+                                            </Grid>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="true">
+                                                <Setter TargetName="templateBorder" Property="BorderBrush" Value="#717171"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <ContentPresenter x:Name="ContentSite" IsHitTestVisible="False"  Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" Margin="12,0,40,0" VerticalAlignment="Center" HorizontalAlignment="Left" />
+                            <Popup x:Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
+                                <Grid x:Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border x:Name="DropDownBorder" Background="#282828" BorderThickness="1" BorderBrush="#3F3F3F" CornerRadius="4"/>
+                                    <ScrollViewer Margin="4" SnapsToDevicePixels="True">
+                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+    </UserControl.Resources>
+
+    <!-- 最外層 Grid 加上背景色，確保沒有透明區域 -->
+    <Grid Background="#0F0F0F">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                      HorizontalScrollBarVisibility="Disabled"
+                      Padding="0,0,10,0"
+                      Background="Transparent">
+            <Border MaxWidth="900" 
+                    Margin="40,30,40,40" 
+                    Background="#181818" 
+                    CornerRadius="8"
+                    Padding="32"
+                    BorderThickness="0">
+                <!--<Border.Effect>
+                    <DropShadowEffect Color="#000000" 
+                                      Opacity="0.5" 
+                                      ShadowDepth="2" 
+                                      BlurRadius="15"
+                                      Direction="270"/>
+                </Border.Effect>-->
+
+                <StackPanel Background="Transparent">
+                    <!-- 頁面標題 -->
+                    <TextBlock Text="上傳影片詳細資料" 
+                               FontSize="24" 
+                               FontWeight="SemiBold" 
+                               Foreground="#FFFFFF" 
+                               Margin="0,0,0,32"/>
+
+                    <!-- 標題輸入區 -->
+                    <StackPanel Margin="0,0,0,28">
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" 
+                                       Text="標題 (必填)" 
+                                       FontWeight="SemiBold" 
+                                       FontSize="14"
+                                       Foreground="#FFFFFF"/>
+                            <TextBlock Grid.Column="1" 
+                                       Foreground="#AAAAAA" 
+                                       FontSize="12"
+                                       VerticalAlignment="Bottom">
+                                <Run Text="{Binding ElementName=TitleTextBox, Path=Text.Length, Mode=OneWay}"/>
+                                <Run Text="/ 100"/>
+                            </TextBlock>
+                        </Grid>
+
+                        <TextBox x:Name="TitleTextBox"
+                                 Text="{Binding model.title, UpdateSourceTrigger=PropertyChanged}" 
+                                 MaxLength="100"
+                                 Style="{StaticResource ModernTextBoxStyle}"/>
+
+                        <TextBlock Text="為影片加上能夠說明內容的標題" 
+                                   Foreground="#AAAAAA" 
+                                   FontSize="12" 
+                                   Margin="0,6,0,0"/>
+                    </StackPanel>
+
+                    <!-- 說明輸入區 -->
+                    <StackPanel Margin="0,0,0,32">
+                        <Grid Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" 
+                                       Text="說明" 
+                                       FontWeight="SemiBold" 
+                                       FontSize="14"
+                                       Foreground="#FFFFFF"/>
+                            <TextBlock Grid.Column="1" 
+                                       Foreground="#AAAAAA" 
+                                       FontSize="12"
+                                       VerticalAlignment="Bottom">
+                                <Run Text="{Binding ElementName=DescriptionTextBox, Path=Text.Length, Mode=OneWay}"/>
+                                <Run Text="/ 5000"/>
+                            </TextBlock>
+                        </Grid>
+
+                        <TextBox x:Name="DescriptionTextBox"
+                                 Text="{Binding model.description, UpdateSourceTrigger=PropertyChanged}" 
+                                 MaxLength="5000"
+                                 MinHeight="180" 
+                                 AcceptsReturn="True" 
+                                 TextWrapping="Wrap" 
+                                 VerticalContentAlignment="Top"
+                                 VerticalScrollBarVisibility="Auto"
+                                 Style="{StaticResource ModernTextBoxStyle}"/>
+
+                        <TextBlock Text="觀眾能透過說明瞭解影片內容" 
+                                   Foreground="#AAAAAA" 
+                                   FontSize="12" 
+                                   Margin="0,6,0,0"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,0,0,32">
+                        <TextBlock Text="播放清單" FontWeight="SemiBold" FontSize="14" Foreground="#FFFFFF" Margin="0,0,0,4"/>
+                        <TextBlock Foreground="#AAAAAA" FontSize="12" Margin="0,0,0,12">
+                            <Run Text="將影片加入一或多個播放清單來彙整內容，方便觀眾瀏覽。"/>
+                            <!--<Hyperlink Foreground="#3EA6FF" UnderlineStyle="{x:Null}">瞭解詳情</Hyperlink>-->
+                        </TextBlock>
+
+                        <ComboBox Style="{StaticResource ModernComboBoxStyle}"
+                                  ItemsSource="{Binding model.selectedPlaylist}"
+                                  DisplayMemberPath="title"
+                                  SelectedValue="{Binding SelectedPlayListItem}">
+                            
+                            <ComboBox.Resources>
+                                <Style TargetType="ComboBoxItem">
+                                    <Setter Property="Padding" Value="12,10"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ComboBoxItem">
+                                                <Border x:Name="gd" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter />
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="gd" Property="Background" Value="#3F3F3F"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter TargetName="gd" Property="Background" Value="#4F4F4F"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ComboBox.Resources>
+                        </ComboBox>
+                    </StackPanel>
+                    <!-- 隱私設定區 -->
+                    <StackPanel Margin="0,0,0,36">
+                        <TextBlock Text="公開程度設定" 
+                                   FontWeight="SemiBold" 
+                                   FontSize="14"
+                                   Foreground="#FFFFFF"
+                                   Margin="0,0,0,12"/>
+
+                        <TextBlock Text="選擇哪些使用者可以觀看這部影片" 
+                                   Foreground="#AAAAAA" 
+                                   FontSize="12" 
+                                   Margin="0,0,0,16"/>
+
+                        <Border Background="#212121" 
+                                CornerRadius="8" 
+                                Padding="20,16">
+                            <StackPanel>
+                                <!-- 私人選項 -->
+                                <Border Padding="12" 
+                                        CornerRadius="4"
+                                        Margin="0,0,0,8"
+                                        Background="Transparent"
+                                        x:Name="PrivateBorder">
+                                    <RadioButton Style="{StaticResource ModernRadioButtonStyle}"
+                                                 IsChecked="{Binding model.privacy, Converter={StaticResource MyEnumConverter}, ConverterParameter={x:Static local:UploadModel+PrivacyStatus.Private}}">
+                                        <StackPanel>
+                                            <TextBlock Text="私人" 
+                                                       FontWeight="SemiBold" 
+                                                       FontSize="14"
+                                                       Foreground="#FFFFFF"/>
+                                            <TextBlock Text="只有你和你指定的使用者可以觀看影片" 
+                                                       Foreground="#AAAAAA" 
+                                                       FontSize="12" 
+                                                       Margin="0,2,0,0"
+                                                       TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </RadioButton>
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding model.privacy, Converter={StaticResource MyEnumConverter}, ConverterParameter={x:Static local:UploadModel+PrivacyStatus.Private}}" Value="True">
+                                                    <Setter Property="Background" Value="#1A2A3A"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                </Border>
+
+                                <!-- 不公開選項 -->
+                                <Border Padding="12" 
+                                        CornerRadius="4"
+                                        Margin="0,0,0,8"
+                                        Background="Transparent"
+                                        x:Name="UnlistedBorder">
+                                    <RadioButton Style="{StaticResource ModernRadioButtonStyle}"
+                                                 IsChecked="{Binding model.privacy, Converter={StaticResource MyEnumConverter}, ConverterParameter={x:Static local:UploadModel+PrivacyStatus.Unlisted}}">
+                                        <StackPanel>
+                                            <TextBlock Text="不公開" 
+                                                       FontWeight="SemiBold" 
+                                                       FontSize="14"
+                                                       Foreground="#FFFFFF"/>
+                                            <TextBlock Text="任何人只要有連結就能觀看影片" 
+                                                       Foreground="#AAAAAA" 
+                                                       FontSize="12" 
+                                                       Margin="0,2,0,0"
+                                                       TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </RadioButton>
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding model.privacy, Converter={StaticResource MyEnumConverter}, ConverterParameter={x:Static local:UploadModel+PrivacyStatus.Unlisted}}" Value="True">
+                                                    <Setter Property="Background" Value="#1A2A3A"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                </Border>
+
+                                <!-- 公開選項 -->
+                                <Border Padding="12" 
+                                        CornerRadius="4"
+                                        Background="Transparent"
+                                        x:Name="PublicBorder">
+                                    <RadioButton Style="{StaticResource ModernRadioButtonStyle}"
+                                                 IsChecked="{Binding model.privacy, Converter={StaticResource MyEnumConverter}, ConverterParameter={x:Static local:UploadModel+PrivacyStatus.Public}}">
+                                        <StackPanel>
+                                            <TextBlock Text="公開" 
+                                                       FontWeight="SemiBold" 
+                                                       FontSize="14"
+                                                       Foreground="#FFFFFF"/>
+                                            <TextBlock Text="所有人都可以搜尋及觀看影片" 
+                                                       Foreground="#AAAAAA" 
+                                                       FontSize="12" 
+                                                       Margin="0,2,0,0"
+                                                       TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </RadioButton>
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding model.privacy, Converter={StaticResource MyEnumConverter}, ConverterParameter={x:Static local:UploadModel+PrivacyStatus.Public}}" Value="True">
+                                                    <Setter Property="Background" Value="#1A2A3A"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- 底部按鈕區 -->
+                    <Border BorderBrush="#2F2F2F" 
+                            BorderThickness="0,1,0,0" 
+                            Padding="0,24,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- 提示訊息 -->
+                            <StackPanel Grid.Column="0" 
+                                        VerticalAlignment="Center"
+                                        Orientation="Horizontal">
+                                <TextBlock Text="💡" 
+                                           FontSize="16" 
+                                           Margin="0,0,8,0"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock Text="上傳後仍可編輯影片詳細資料" 
+                                           Foreground="#AAAAAA" 
+                                           FontSize="13"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                            <!-- 上傳按鈕 -->
+                            <Button Grid.Column="1"
+                                    Content="上傳影片" 
+                                    Height="40" 
+                                    Padding="32,0"
+                                    Background="#3EA6FF" 
+                                    Foreground="#0F0F0F" 
+                                    FontWeight="SemiBold"
+                                    FontSize="14"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    Command="{Binding UploadVideo}" 
+                                    CommandParameter="{Binding model}">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="border" 
+                                                            Background="{TemplateBinding Background}" 
+                                                            CornerRadius="4"
+                                                            Padding="{TemplateBinding Padding}">
+                                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                                          VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="border" Property="Background" Value="#65B8FF"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsPressed" Value="True">
+                                                            <Setter TargetName="border" Property="Background" Value="#2A8FE8"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter TargetName="border" Property="Background" Value="#303030"/>
+                                                            <Setter Property="Foreground" Value="#717171"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

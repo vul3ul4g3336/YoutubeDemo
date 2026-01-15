@@ -30,7 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             this.button1 = new System.Windows.Forms.Button();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.videoCardContainer = new System.Windows.Forms.FlowLayoutPanel();
             this.search = new System.Windows.Forms.TextBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
@@ -42,7 +41,12 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.elementHost1 = new System.Windows.Forms.Integration.ElementHost();
             this.button2 = new System.Windows.Forms.Button();
+            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.添加至撥放清單ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
+            this.contextMenuStrip2.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -55,11 +59,6 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // contextMenuStrip1
-            // 
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
-            // 
             // videoCardContainer
             // 
             this.videoCardContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -68,7 +67,7 @@
             this.videoCardContainer.AutoScroll = true;
             this.videoCardContainer.Location = new System.Drawing.Point(53, 94);
             this.videoCardContainer.Name = "videoCardContainer";
-            this.videoCardContainer.Size = new System.Drawing.Size(950, 478);
+            this.videoCardContainer.Size = new System.Drawing.Size(1160, 494);
             this.videoCardContainer.TabIndex = 1;
             this.videoCardContainer.SizeChanged += new System.EventHandler(this.flowLayoutPanel1_SizeChanged);
             // 
@@ -170,7 +169,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.elementHost1.Location = new System.Drawing.Point(53, 622);
             this.elementHost1.Name = "elementHost1";
-            this.elementHost1.Size = new System.Drawing.Size(904, 78);
+            this.elementHost1.Size = new System.Drawing.Size(1114, 78);
             this.elementHost1.TabIndex = 9;
             this.elementHost1.Text = "elementHost1";
             this.elementHost1.Child = null;
@@ -185,11 +184,47 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
+            // contextMenuStrip2
+            // 
+            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.添加至撥放清單ToolStripMenuItem});
+            this.contextMenuStrip2.Name = "contextMenuStrip2";
+            this.contextMenuStrip2.Size = new System.Drawing.Size(159, 26);
+            // 
+            // 添加至撥放清單ToolStripMenuItem
+            // 
+            this.添加至撥放清單ToolStripMenuItem.Name = "添加至撥放清單ToolStripMenuItem";
+            this.添加至撥放清單ToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.添加至撥放清單ToolStripMenuItem.Text = "添加至撥放清單";
+            this.添加至撥放清單ToolStripMenuItem.DropDownOpening += new System.EventHandler(this.addToPlaylistMenuItem_DropDownOpening);
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(1013, 11);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(94, 50);
+            this.button3.TabIndex = 11;
+            this.button3.Text = "播放清單";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(1124, 13);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(81, 48);
+            this.button4.TabIndex = 12;
+            this.button4.Text = "上傳影片";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
             // SearchForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1048, 728);
+            this.ClientSize = new System.Drawing.Size(1258, 728);
+            this.Controls.Add(this.button4);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.elementHost1);
             this.Controls.Add(this.panel1);
@@ -202,6 +237,7 @@
             this.Load += new System.EventHandler(this.SearchForm_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.contextMenuStrip2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -210,7 +246,6 @@
         #endregion
 
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.FlowLayoutPanel videoCardContainer;
         private System.Windows.Forms.TextBox search;
         private System.Windows.Forms.ComboBox comboBox1;
@@ -222,6 +257,10 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Integration.ElementHost elementHost1;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
+        private System.Windows.Forms.ToolStripMenuItem 添加至撥放清單ToolStripMenuItem;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button4;
     }
 }
 

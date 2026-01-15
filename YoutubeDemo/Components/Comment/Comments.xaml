@@ -5,16 +5,17 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:comp="clr-namespace:YoutubeDemo.Components" 
              xmlns:comment="clr-namespace:YoutubeDemo.Components.Comment"  
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="400"
-             Background="Transparent">
+             Background="Transparent"
+             x:Name="MyCommentControl">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
 
     <StackPanel Margin="0,0,0,10">
-
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -22,26 +23,19 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <!-- 0. 頭像區 -->
             <Ellipse Grid.Column="0" Width="32" Height="32" Margin="0,0,10,0" VerticalAlignment="Top">
                 <Ellipse.Fill>
                     <ImageBrush ImageSource="{Binding AuthorProfileImageUrl}" />
                 </Ellipse.Fill>
             </Ellipse>
 
-            <!-- 1. 中間內容區 -->
-            <StackPanel Grid.Column="1" Cursor="">
-                <!-- 作者名稱與日期 -->
+            <StackPanel Grid.Column="1">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding AuthorDisplayName}" Foreground="#FFFFFF" FontWeight="SemiBold" FontSize="12"/>
                     <TextBlock Text="{Binding PublishedAt, StringFormat='{}{0:yyyy-MM-dd}'}" Foreground="#AAAAAA" FontSize="11" Margin="8,0,0,0"/>
                 </StackPanel>
 
-                <!-- ======================================================== -->
-                <!-- [A] 顯示模式 (DisplayPanel) - 正常瀏覽時顯示 -->
-                <!-- 加上 x:Name="DisplayPanel" 讓後端可以控制隱藏 -->
-                <!-- ======================================================== -->
-                <TextBlock x:Name="DisplayPanel" Visibility="Visible" TextWrapping="Wrap" FontSize="13" LineHeight="18" Margin="0,2,0,0">
+                <TextBlock x:Name="DisplayPanel" Visibility="{Binding displayStatus , Mode=TwoWay}" TextWrapping="Wrap" FontSize="13" LineHeight="18" Margin="0,2,0,0">
                     <ItemsControl ItemsSource="{Binding commentSegment}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -72,7 +66,7 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </TextBlock.Style>
-                                        <Hyperlink NavigateUri="{Binding Url}" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#4A9EFF" TextDecorations="None">
+                                        <Hyperlink NavigateUri="{Binding Url, TargetNullValue='http://localhost'}" RequestNavigate="Hyperlink_RequestNavigate" Foreground="#4A9EFF" TextDecorations="None">
                                             <Run Text="{Binding Text, Mode=OneWay}"/>
                                         </Hyperlink>
                                     </TextBlock>
@@ -82,107 +76,36 @@
                     </ItemsControl>
                 </TextBlock>
 
-                <!-- ======================================================== -->
-                <!-- [B] 編輯模式 (EditPanel) - 點擊編輯後顯示 -->
-                <!-- x:Name="EditPanel", 預設隱藏 (Collapsed) -->
-                <!-- ======================================================== -->
-                <StackPanel x:Name="EditPanel" Visibility="Collapsed" Margin="0,5,0,0">
-
-                    <!-- 編輯輸入框 (x:Name="EditCommentBox") -->
+                <StackPanel x:Name="EditPanel" Visibility="{Binding EditStatus , Mode=TwoWay}"  Margin="0,5,0,0">
                     <TextBox x:Name="EditCommentBox"
                              Text="{Binding TextOriginal, UpdateSourceTrigger=PropertyChanged}" 
-                             Foreground="White" 
-                             Background="Transparent" 
-                             BorderBrush="#3F3F3F" 
-                             BorderThickness="0,0,0,1" 
-                             Padding="0,5,0,5" 
-                             FontSize="14" 
-                             TextWrapping="Wrap" 
-                             AcceptsReturn="True"
-                             CaretBrush="White">
-                        <TextBox.Style>
-                            <Style TargetType="TextBox">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="TextBox">
-                                            <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
-                                                <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsKeyboardFocused" Value="true">
-                                                    <Setter Property="BorderBrush" TargetName="border" Value="White"/>
-                                                    <Setter Property="BorderThickness" TargetName="border" Value="0,0,0,2"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </TextBox.Style>
+                             Foreground="White" Background="Transparent" BorderBrush="#3F3F3F" BorderThickness="0,0,0,1" 
+                             Padding="0,5,0,5" FontSize="14" TextWrapping="Wrap" AcceptsReturn="True" CaretBrush="White">
                     </TextBox>
-
-                    <!-- 取消 / 儲存 按鈕 -->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
-                        <!-- 取消按鈕 -->
-                        <Button Content="取消" Click="CancelEdit_Click" Cursor="Hand" Background="Transparent" Foreground="White" BorderThickness="0" Margin="0,0,8,0">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}" Padding="16,8" CornerRadius="18">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="#2A2A2A"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
-
-                        <!-- 儲存按鈕 -->
-                        <Button Content="儲存" Click="SaveEdit_Click" Cursor="Hand" Background="#3EA6FF" Foreground="Black" BorderThickness="0">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}" Padding="16,8" CornerRadius="18">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextElement.FontWeight="SemiBold"/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="#65B8FF"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Button.Template>
+                        <Button Content="取消" Click="CancelEdit_Click" Foreground="White" Background="Transparent" BorderThickness="0" Margin="0,0,8,0"/>
+                        <Button Content="儲存" Cursor="Hand" Background="#3EA6FF" Foreground="Black">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <i:InvokeCommandAction Command="{Binding DataContext.saveEditCommand, ElementName=CommentRootContainer }"
+                                                           CommandParameter="{Binding}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
                         </Button>
                     </StackPanel>
                 </StackPanel>
 
-                <!-- 下方按讚/回覆功能列 -->
                 <StackPanel Orientation="Horizontal" Margin="0,6,0,0" VerticalAlignment="Center" Visibility="{Binding CanRate, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <Border CornerRadius="12" Padding="8,4" Margin="0,0,4,0" Cursor="Hand">
-                        <Border.Style>
-                            <Style TargetType="Border">
-                                <Setter Property="Background" Value="Transparent"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ViewerRating}" Value="like">
-                                        <Setter Property="Background" Value="#3F4A9EFF"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="👍" FontSize="12" Margin="0,0,4,0"/>
-                            <TextBlock Text="{Binding LikeCount}" Foreground="#AAAAAA" FontSize="11"/>
-                        </StackPanel>
-                    </Border>
-                    <Button Content="回覆" Click="Reply_Click" Tag="{Binding DataContext,RelativeSource={RelativeSource AncestorType=ItemsControl}}" Foreground="#AAAAAA" Background="Transparent" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="8,0,0,0"/>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="👍" FontSize="12" Margin="0,0,4,0"/>
+                        <TextBlock Text="{Binding LikeCount}" Foreground="#AAAAAA" FontSize="11"/>
+                    </StackPanel>
+                    <Button Content="回覆" Click="Reply_Click" Foreground="#AAAAAA" Background="Transparent" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="8,0,0,0"/>
                 </StackPanel>
 
-                <!-- 查看回覆 Toggle (修正版) -->
-                <ToggleButton x:Name="ReplyToggle" Foreground="#4A9EFF" Background="Transparent" BorderThickness="0" FontSize="12" FontWeight="SemiBold" Margin="0,8,0,0" Cursor="Hand" HorizontalAlignment="Left" Padding="0">
+                <ToggleButton x:Name="ReplyToggle" Background="Transparent" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Left">
                     <ToggleButton.Style>
                         <Style TargetType="ToggleButton">
-                            <Setter Property="Visibility" Value="Visible"/>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="ToggleButton">
@@ -202,7 +125,6 @@
                                 </Setter.Value>
                             </Setter>
                             <Style.Triggers>
-                                <!-- 只有當 TotalReplyCount = 0 時才隱藏 -->
                                 <DataTrigger Binding="{Binding TotalReplyCount}" Value="0">
                                     <Setter Property="Visibility" Value="Collapsed"/>
                                 </DataTrigger>
@@ -210,168 +132,49 @@
                         </Style>
                     </ToggleButton.Style>
                 </ToggleButton>
-
             </StackPanel>
 
-            <!-- 2. 右側選單按鈕 (點點點) -->
-            <!-- 加上 x:Name="MenuToggle" 讓後端可以關閉它 -->
-            <ToggleButton x:Name="MenuToggle" Grid.Column="2" VerticalAlignment="Top" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="8,4" Visibility="{Binding VisibilityButton}">
+            <ToggleButton x:Name="MenuToggle" Grid.Column="2" VerticalAlignment="Top" Background="Transparent" BorderThickness="0" Cursor="Hand">
                 <ToggleButton.Template>
                     <ControlTemplate TargetType="ToggleButton">
-                        <Border Background="Transparent" Padding="4">
-                            <TextBlock Text="⋯" FontSize="18" Foreground="#AAAAAA" VerticalAlignment="Center"/>
-                        </Border>
+                        <TextBlock Text="⋯" FontSize="18" Foreground="#AAAAAA" Padding="4"/>
                     </ControlTemplate>
                 </ToggleButton.Template>
             </ToggleButton>
 
-            <!-- 選單 Popup -->
             <Popup IsOpen="{Binding IsChecked, ElementName=MenuToggle}" StaysOpen="False" PlacementTarget="{Binding ElementName=MenuToggle}" Placement="Bottom" AllowsTransparency="True">
-                <Border Background="#2A2A2A" BorderBrush="#444444" BorderThickness="1" CornerRadius="4" Padding="0">
+                <Border Background="#2A2A2A" BorderBrush="#444444" BorderThickness="1" CornerRadius="4">
                     <StackPanel>
-                        <!-- 編輯按鈕：綁定 Click="Edit_Click" -->
-                        <Button Content="編輯" Click="Edit_Click" Background="Transparent" BorderThickness="0" Foreground="#FFFFFF" Padding="12,8" Cursor="Hand" HorizontalContentAlignment="Left" MinWidth="100">
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="#3A3A3A"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                        <!-- 刪除按鈕 -->
-                        <Button Content="刪除" Click="Remove_Click" Tag="{Binding DataContext,RelativeSource={RelativeSource AncestorType=ItemsControl}}" Background="Transparent" BorderThickness="0" Foreground="#FF6666" Padding="12,8" Cursor="Hand" HorizontalContentAlignment="Left" MinWidth="100">
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Setter Property="Background" Value="Transparent"/>
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="#3A3A3A"/>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
+                        <Button Content="編輯" Click="Edit_Click" Background="Transparent" Foreground="White" Padding="12,8"/>
+                        <Button Content="刪除" Background="Transparent" Foreground="#FF6666" Padding="12,8">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <i:InvokeCommandAction Command="{Binding DataContext.removeCommand, ElementName=CommentRootContainer}"
+                                                           CommandParameter="{Binding}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
                         </Button>
                     </StackPanel>
                 </Border>
             </Popup>
         </Grid>
 
-        <!-- ======================================================== -->
-        <!-- [新增] 回覆輸入區 (簡化版，移除表情按鈕) -->
-        <!-- x:Name="ReplyInputPanel", 預設隱藏 (Collapsed) -->
-        <!-- ======================================================== -->
-        <Grid x:Name="ReplyInputPanel" Visibility="Collapsed" Margin="42,8,0,8">
+        <Grid x:Name="ReplyInputPanel" Visibility="{Binding ReplyStatus,Mode=TwoWay}" Margin="42,8,0,8">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-
-            <!-- 回覆輸入框 (x:Name="ReplyBox") -->
-            <TextBox x:Name="ReplyBox"
-                     Grid.Row="0"
-                     Text="{Binding NewReplyText, UpdateSourceTrigger=PropertyChanged}" 
-                     Foreground="White" 
-                     Background="Transparent" 
-                     BorderBrush="#3F3F3F" 
-                     BorderThickness="0,0,0,1" 
-                     Padding="0,5,0,5" 
-                     FontSize="13" 
-                     TextWrapping="Wrap" 
-                     AcceptsReturn="False" 
-                     CaretBrush="White" 
-                     MinHeight="30">
-                <TextBox.Style>
-                    <Style TargetType="TextBox">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="TextBox">
-                                    <Border x:Name="border" 
-                                            BorderBrush="{TemplateBinding BorderBrush}" 
-                                            BorderThickness="{TemplateBinding BorderThickness}" 
-                                            Background="{TemplateBinding Background}" 
-                                            SnapsToDevicePixels="True">
-                                        <ScrollViewer x:Name="PART_ContentHost" 
-                                                      Focusable="false" 
-                                                      HorizontalScrollBarVisibility="Hidden" 
-                                                      VerticalScrollBarVisibility="Hidden"/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsKeyboardFocused" Value="true">
-                                            <Setter Property="BorderBrush" TargetName="border" Value="White"/>
-                                            <Setter Property="BorderThickness" TargetName="border" Value="0,0,0,2"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </TextBox.Style>
-            </TextBox>
-
-            <!-- 取消 / 回覆 按鈕區 -->
+            <TextBox x:Name="ReplyBox" Grid.Row="0" Text="{Binding ReplyMessage}" Foreground="White" Background="Transparent" BorderBrush="#3F3F3F" BorderThickness="0,0,0,1" AcceptsReturn="False" MinHeight="30"/>
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
-                <!-- 取消按鈕 -->
-                <Button Content="取消" Click="CancelReply_Click" Cursor="Hand" Background="Transparent" Foreground="#AAAAAA" BorderThickness="0" Margin="0,0,8,0" FontSize="13" FontWeight="Medium" Padding="12,6">
-                    <Button.Style>
-                        <Style TargetType="Button">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border x:Name="BtnBorder" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" CornerRadius="18">
-                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="BtnBorder" Property="Background" Value="#1A1A1A"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </Button.Style>
-                </Button>
-
-                <!-- 回覆按鈕 -->
-                <Button Content="回覆" Click="SendReply_Click" Cursor="Hand" Background="#3EA6FF" Foreground="#0F0F0F" BorderThickness="0" FontSize="13" FontWeight="Medium" Padding="16,6">
-                    <Button.Style>
-                        <Style TargetType="Button">
-                            <Setter Property="IsEnabled" Value="True"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border x:Name="BtnBorder" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" CornerRadius="18">
-                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="BtnBorder" Property="Background" Value="#65B8FF"/>
-                                            </Trigger>
-                                            <Trigger Property="IsEnabled" Value="False">
-                                                <Setter TargetName="BtnBorder" Property="Background" Value="#272727"/>
-                                                <Setter TargetName="BtnBorder" Property="Opacity" Value="0.5"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Text.Length, ElementName=ReplyBox, FallbackValue=0}" Value="0">
-                                    <Setter Property="IsEnabled" Value="False"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
+                <Button Content="取消" Click="CancelReply_Click" Foreground="#AAAAAA" Background="Transparent" BorderThickness="0"/>
+                <Button Content="回覆" 
+                        Command="{Binding DataContext.sendReplyCommand,ElementName=CommentRootContainer}"
+                        CommandParameter="{Binding}" 
+                        Background="#3EA6FF" Foreground="#0F0F0F"/>
             </StackPanel>
         </Grid>
 
-        <!-- 回覆列表 (保持原有的設定) -->
-        <ItemsControl ItemsSource="{Binding replies}" Margin="20,0,0,0">
+        <ItemsControl ItemsSource="{Binding replies}" Margin="42,0,0,0">
             <ItemsControl.Style>
                 <Style TargetType="ItemsControl">
                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -384,15 +187,9 @@
             </ItemsControl.Style>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <comment:Comments  />
+                    <comment:Comments />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel/>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
         </ItemsControl>
-
     </StackPanel>
 </UserControl>

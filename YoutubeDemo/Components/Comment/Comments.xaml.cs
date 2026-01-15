@@ -24,23 +24,15 @@ namespace YoutubeDemo.Components.Comment
     /// </summary>
     public partial class Comments : UserControl
     {
-        //private CommentViewModel viewModel;
-        //private CommentModel model;
+        
 
-
-        //public Comments(CommentModel Model, CommentViewModel viewModel)
-        //{
-        //    InitializeComponent();
-        //    this.viewModel = viewModel;
-        //    this.DataContext = Model;
-
-        //}
+        
         VideoForm videoForm;
 
         public Comments()
         {
             InitializeComponent();
-            videoForm = VideoForm.CurrentInstance;
+            
 
             // 在沒有參數傳入時，DataContext 預設為 null，等待 VideoForm 設置。
         }
@@ -49,24 +41,7 @@ namespace YoutubeDemo.Components.Comment
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
             e.Handled = true;
         }
-        private void Remove_Click(object sender, RoutedEventArgs e)
-        {
-
-            MenuToggle.IsChecked = false;
-            Button btn = sender as Button;
-            CommentModel model = (CommentModel)btn.DataContext;
-            if (btn.Tag is VideoForm form)
-            {
-                form.commentViewModel.Remove(model);
-            }
-            else if (btn.Tag is CommentModel commentModel)
-            {
-                commentModel.replies.Remove(model);
-            }
-            videoForm.DeleteComment(model.CommentID);
-
-
-        }
+   
         private void CancelEdit_Click(object sender, RoutedEventArgs e)
         {
             DisplayPanel.Visibility = Visibility.Visible;
@@ -77,20 +52,7 @@ namespace YoutubeDemo.Components.Comment
         }
 
         // 3. 點擊「儲存」：還原並觸發後續邏輯
-        private async void SaveEdit_Click(object sender, RoutedEventArgs e)
-        {
-            // 在這裡呼叫你的 API 更新邏輯
-            // UpdateComment(EditCommentBox.Text)...
-
-            // 完成後切換回顯示模式
-            Button btn = sender as Button;
-            CommentModel model = (CommentModel)btn.DataContext;
-            DisplayPanel.Visibility = Visibility.Visible;
-            EditPanel.Visibility = Visibility.Collapsed;
-            var comment = await videoForm.commentPresenter.EditComment(model.CommentID, EditCommentBox.Text);
-            videoForm.commentViewModel.EditComments(model,comment);
-
-        }
+       
         private void Edit_Click(object sender, RoutedEventArgs e)
         {
             // 1. 切換顯示狀態
@@ -110,7 +72,8 @@ namespace YoutubeDemo.Components.Comment
 
         private void Reply_Click(object sender, RoutedEventArgs e)
         {
-
+           Button button = sender as Button;
+            CommentModel commentModel = (CommentModel)button.DataContext;
             // 顯示回覆輸入框
             ReplyInputPanel.Visibility = Visibility.Visible;
 
@@ -127,25 +90,25 @@ namespace YoutubeDemo.Components.Comment
             ReplyBox.Clear();
         }
 
-        private async void SendReply_Click(object sender, RoutedEventArgs e)
-        {
-            Button btn = sender as Button;
-            CommentModel model = (CommentModel)btn.DataContext;
+        //private async void SendReply_Click(object sender, RoutedEventArgs e)
+        //{
+        //    Button btn = sender as Button;
+        //    CommentModel model = (CommentModel)btn.DataContext;
 
-            // 取得回覆內容
-            string replyText = ReplyBox.Text;
-            if (string.IsNullOrWhiteSpace(replyText)) return;
+        //    // 取得回覆內容
+        //    string replyText = ReplyBox.Text;
+        //    if (string.IsNullOrWhiteSpace(replyText)) return;
 
             
-            var comment = await videoForm.commentPresenter.PostCommentReply(model.CommentID, ReplyBox.Text);
-            videoForm.commentViewModel.ReplyToComment(comment);
-            // 送出後隱藏輸入框
-            ReplyInputPanel.Visibility = Visibility.Collapsed;
+        //    var comment = await videoForm.commentPresenter.PostCommentReply(model.CommentID, ReplyBox.Text);
+        //    videoForm.commentViewModel.ReplyToComment(comment);
+        //    // 送出後隱藏輸入框
+        //    ReplyInputPanel.Visibility = Visibility.Collapsed;
 
-            // 清空輸入框
-            ReplyBox.Clear();
+        //    // 清空輸入框
+        //    ReplyBox.Clear();
 
 
-        }
+        //}
     }
 }

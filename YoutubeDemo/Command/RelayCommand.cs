@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -9,39 +10,47 @@ namespace YoutubeDemo.Command
 {
     public class RelayCommand : ICommand
     {
-        private readonly Action<object> _execute;  // 要執行的動作
-        private readonly Func<object, bool> _canExecute;  // 能否執行（可選）
+        
 
-        public RelayCommand(Action<object> execute, Func<object, bool> canExecute = null)
+
+        public event EventHandler CanExecuteChanged;
+        Action callback;
+        public RelayCommand(Action callback)
         {
-            _execute = execute;
-            _canExecute = canExecute;
-        }      
-
-        public event EventHandler CanExecuteChanged
-        {
-            add
-            {
-
-                if (_canExecute != null)
-                    CommandManager.RequerySuggested += value;
-            }
-            remove
-            {
-
-                if (_canExecute != null)
-                    CommandManager.RequerySuggested -= value;
-            }
+            this.callback = callback;
         }
-
         public bool CanExecute(object parameter)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public void Execute(object parameter)
         {
-            _execute.Invoke(parameter);
+            this.callback.Invoke();
         }
     }
+    public class RelayCommand<T> : ICommand
+    {
+        private readonly Action<T> _execute;  // 要執行的動作
+        private readonly Func<T, bool> _canExecute;  // 能否執行（可選）
+
+        public RelayCommand(Action<T> execute)
+        {
+            _execute = execute;
+           
+        }
+        public event EventHandler CanExecuteChanged;
+
+        public bool CanExecute(object parameter)
+        {
+            return true;
+        }
+
+        public void Execute(object parameter)
+        {
+            _execute.Invoke((T)parameter);
+        }
+    }
+
+    
 }

@@ -7,20 +7,39 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Xml.Linq;
+using YoutubeAPI.Videos;
+using YoutubeDemo.Command;
 using YoutubeDemo.Models.Enum;
+using YoutubeDemo.Presenter;
+using static YoutubeDemo.Contract.CommentContract;
 
 namespace YoutubeDemo.Components
 {
+    
     [AddINotifyPropertyChangedInterface]
-    public class CommentModel
+    public class CommentModel : ICommentView
     {
-
+        public CommentPresenter presenter;
+        
+        
+        public CommentModel()
+        {
+            presenter = new CommentPresenter(this);
+            //_ = presenter.Comment_Request(videoID);
+            
+        }
+        #region
+        public Visibility displayStatus { get; set; } = Visibility.Visible;
+        public Visibility EditStatus { get; set; } = Visibility.Collapsed;
+        public Visibility ReplyStatus { get; set; } = Visibility.Collapsed;
+        public string ReplyMessage { get; set; }
         public Visibility VisibilityButton => AuthorChannelId == User.ID ? Visibility.Visible : Visibility.Collapsed;
         public string AuthorChannelId { get; set; }
         public string CommentID { get; set; }
         public string AuthorDisplayName { get; set; }
-        public string AuthorProfileImageUrl { get; set; }
+        public string AuthorProfileImageUrl { get; set; } = "https://yt3.ggpht.com/ytc/AIdro_l3Bz6doyOqmxnbxC7YTPEYDkB4EqydIAMsbEUjvC3cQlxG46o=s88-c-k-c0x00ffffff-no-rj";
         public bool CanRate { get; set; }
         public bool CanReply { get; set; } = true;
         public string ParentId { get; set; }
@@ -63,11 +82,8 @@ namespace YoutubeDemo.Components
                 return _commentSegment;
             }
             set => _commentSegment = value;
-        }       
+        }
         public ObservableCollection<CommentModel> replies { get; set; } //public CommentModel[] replies { get; set; }
-
-
-
         private List<CommentSegment> SegmentTextByUrls(string Text)
         {
             string pattern = @"<a\s+href\s*=\s*""([^""]+)""\s*>(.*?)<\/a>";
@@ -156,6 +172,12 @@ namespace YoutubeDemo.Components
             //return segments;
 
         }
+
+        public void Comment_Response(List<CommentModel> models)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
     }
     public class CommentSegment
     {
@@ -163,6 +185,8 @@ namespace YoutubeDemo.Components
         public string Url { get; set; }
         public bool IsHyperLink { get; set; }
     }
+
+  
 
 
 }
